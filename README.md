@@ -14,4 +14,4 @@
 
 ## Program Flow
 
-![Program Flow](./docs/img/program-flow.jpg)
+![Program Flow](./docs/img/program-flow.jpeg)
