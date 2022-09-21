@@ -1,48 +1,59 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs/promises')
+const {fetchAllJobs} = require('./functions/fetchAllJobs')
 
-const fetchAllJobs = async () => {
-  const URL = 'https://www.seek.com.au/graduate-developer-jobs/in-All-Brisbane-QLD'
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  await page.goto(URL)
+const jobTitle = 'Graduate Developer'
+const location = 'Brisbane'
+const searchTerm = jobTitle.toLowerCase().split(' ').join('-')
+const filters = ['Graduate', 'Junior']
 
-  const totalJobs = await page.evaluate(() => {
-    return Number(Array.from(document.querySelectorAll(("#SearchSummary > h1 > span")))
-      .map(x => x.textContent)[0])
-  })
-  const numberOfPages = Math.ceil(totalJobs / 22) + 1
-  console.log(`${totalJobs} jobs, ${numberOfPages} pages of results`)
 
-  let currentPage = 1
-  let data = []
-  while (currentPage <= numberOfPages) {
-    let newResults = await page.evaluate(() => {
-      let results =[]
-      let jobListings = document.querySelectorAll('._1tmgvwc')
-      jobListings.forEach( job => {
-        results.push({
-          'title': job.textContent,
-          'url': job.href
-        })
-      })
-      return results
+const app = async () => {
+
+  // const allJobs = await fetchAllJobs(searchTerm, location)
+  const allJobs = require('./jobs.json')
+
+
+  // Filter jobs
+  const jobFilter = (allJobs, filters) => {
+    return allJobs.filter(job => {
+      return filters.some(filter => job.title.toLowerCase().includes(filter.toLowerCase())) 
     })
-
-    data = data.concat(newResults)
-
-    nextPage = currentPage + 1
-    if (currentPage < numberOfPages) {
-      await page.goto('https://www.seek.com.au/graduate-developer-jobs/in-All-Brisbane-QLD?page='+nextPage)
-      await page.waitForSelector('._1tmgvwc')
-    }
-    console.log(`Page ${currentPage} scraped, ${newResults.length} jobs added`);
-    currentPage++;
   }
 
-  await fs.writeFile('jobs.json', JSON.stringify(data, null, 2))
-  await browser.close()
-  return data
+  const filteredJobs = jobFilter(allJobs, filters)
+
+  // Fetch descriptions
+  const fetchDescriptions = async (filteredJobs) => {
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
+    const totalJobs = filteredJobs.length
+    console.log(`${totalJobs} descriptions to scrape`);
+
+    let counter = 0
+    let data = []
+    while (counter < totalJobs){
+      let currentJob = filteredJobs[counter]
+      await page.goto(currentJob.url)
+
+      const description = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('._1v38w810')).map(x => x.textContent)
+      })
+
+      currentJob.description = description
+      counter++ 
+      console.log(`Added description to ${currentJob.title}, ${totalJobs - counter} to go.`)
+    }
+    await browser.close()
+    console.log(filteredJobs);
+  }
+
+  fetchDescriptions(filteredJobs)
+
+  // Find keywords
+
+  // Display data
+
 }
 
-fetchAllJobs()
+app()
