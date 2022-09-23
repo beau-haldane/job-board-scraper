@@ -3,35 +3,52 @@ const {fetchAllJobs} = require('./functions/fetchAllJobs')
 const {fetchDescriptions} = require('./functions/fetchDescriptions')
 const {jobFilter} = require('./functions/jobFilter')
 
-const jobTitle = 'senior Product Manager'
+const jobTitle = 'graduate developer'
 const location = 'Brisbane'
 const searchTerm = jobTitle.toLowerCase().split(' ').join('-')
-const titleFilters = ['product', 'senior']
-const descriptionKeywords = ['user-facing', 'agile']
+const titleFilters = ['junior', 'graduate']
+const descriptionKeywords = ['react', 'javascript', 'MERN', 'figma', 'node', 'angular', 'vue', 'REST', 'typescript']
 
 
 const app = async () => {
-  // Fetch jobs
-  const allJobs = await fetchAllJobs(searchTerm, location)
-  // const allJobs = require('./jobs.json')
+// Uncomment to use local files
+  const filteredJobs = require('./filteredJobs.json')
+  const allJobs = require('./jobs.json')
 
-  // Filter Jobs
-  const filteredJobs = jobFilter(allJobs, titleFilters)
-  console.log(`Filtered ${allJobs.length} jobs down to ${filteredJobs.length} using title filters "${titleFilters.join(', ')}"`);
+// Uncomment to run scraper
+  // // Fetch jobs
+  // const allJobs = await fetchAllJobs(searchTerm, location)
+  
+  // // Filter Jobs
+  // const filteredJobs = jobFilter(allJobs, titleFilters)
+  // console.log(`Filtered ${allJobs.length} jobs down to ${filteredJobs.length} using title filters "${titleFilters.join(', ')}"`);
 
-  // Fetch descriptions
-  await fetchDescriptions(filteredJobs)
-  console.log(filteredJobs);
+  // // Fetch descriptions
+  // await fetchDescriptions(filteredJobs)
+  // console.log(filteredJobs);
 
-  // Find keywords
-  filteredJobs.filter( job => {
-    if (descriptionKeywords.some(keyword => job.description[0].toLowerCase().includes(keyword.toLowerCase()))){
-      console.log(`${job.title} includes a keyword`);
-      console.log(job.url);
-    }
+  // Find jobs with keywords
+
+  const jobsWithKeywords = filteredJobs.filter( job => {
+    return descriptionKeywords.some(keyword => job.description[0].toLowerCase().match(new RegExp(keyword.toLowerCase(), "g")))
+  })
+
+  descriptionKeywords.forEach( keyword => {
+    jobsWithKeywords.forEach( job => {
+      if (job.keywords === undefined) job.keywords = []
+      const numberOfOccurrences = (job.description[0].toLowerCase().match(new RegExp(keyword, "g")) || [])
+      job.keywords.push({[keyword]: numberOfOccurrences.length})
+    }) 
   })
 
   // Display data
+  jobsWithKeywords.forEach(job => {
+    console.log(`${job.title} has the following keyword matches:`);
+    job.keywords.forEach(keyword => {
+      console.log(keyword);
+    })
+    console.log(job.url);
+  })
 
 }
 

@@ -10,7 +10,7 @@ const fetchAllJobs = async (searchTerm, location) => {
     return Number(Array.from(document.querySelectorAll(("#SearchSummary > h1 > span")))
       .map(x => x.textContent)[0])
   })
-  const numberOfPages = Math.ceil(totalJobs / 22) + 1
+  const numberOfPages = Math.ceil(totalJobs / 22)
   console.log(`${totalJobs} jobs, ${numberOfPages} pages of results`)
 
   let currentPage = 1
