@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer')
 const {fetchAllJobs} = require('./functions/fetchAllJobs')
 const {fetchDescriptions} = require('./functions/fetchDescriptions')
 const {jobFilter} = require('./functions/jobFilter')
+const fs = require('fs/promises')
 
 const jobTitle = 'graduate developer'
 const location = 'Brisbane'
@@ -36,17 +36,17 @@ const app = async () => {
   descriptionKeywords.forEach( keyword => {
     jobsWithKeywords.forEach( job => {
       if (job.keywords === undefined) job.keywords = []
-      const numberOfOccurrences = (job.description[0].toLowerCase().match(new RegExp(keyword, "g")) || [])
+      const numberOfOccurrences = (job.description[0].toLowerCase().match(new RegExp(keyword.toLowerCase(), "g")) || [])
       job.keywords.push({[keyword]: numberOfOccurrences.length})
     }) 
   })
 
+  await fs.writeFile('jobsWithKeywords.json', JSON.stringify(jobsWithKeywords, null, 2))
+
   // Display data
   jobsWithKeywords.forEach(job => {
     console.log(`${job.title} has the following keyword matches:`);
-    job.keywords.forEach(keyword => {
-      console.log(keyword);
-    })
+    job.keywords.forEach(keyword => console.log(keyword))
     console.log(job.url);
   })
 

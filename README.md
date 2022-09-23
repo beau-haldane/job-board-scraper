@@ -1,11 +1,11 @@
 # Job Board Scraper
 ## Purpose
-To aide in the job-seeking process which I'm currently undergoing by allowing me to first scrape all job listings returned by a particular search term on Seek, e.g. 'Junior Developer', then filtering the returned jobs to only show those which actually contain particular words in the job title, e.g. 'junior' or 'graduate'. Furthermore, the application will search through the job descriptions of the filtered list and find user-defined keywords, e.g. 'react', 'MERN', or 'SQL' and display the results to the user along with useful data such as how many jobs mentioned each keyword and which jobs mentioned said keywords.
+To aid in the job-seeking process which I'm currently undergoing by allowing me to first scrape all job listings returned by a particular search term on Seek, e.g. 'Junior Developer', then filtering the returned jobs to only show those which actually contain particular words in the job title, e.g. 'junior' or 'graduate'. Furthermore, the application will search through the job descriptions of the filtered list and find user-defined keywords, e.g. 'react', 'MERN', or 'SQL' and display the results to the user along with useful data such as how many jobs mentioned each keyword and which jobs mentioned said keywords.
 
 ## User Stories
 * As a user, I want to find Graduate Developer job ads which specifically mention technologies which I'm adept at
 * As a user, I want to compare the popularity of two competing technologies on the job market to help me to decide which would be more valuable to learn
-* As a user, I want to analyse the current job offerings in my field and see which particular skills are in demand currently
+* As a user, I want to analyse the current job offerings in my field and see which particular skills are in demand
 * As a user, I want to compare the job markets between cities and assess which skills are sought after in different markets
 
 ## Functions
