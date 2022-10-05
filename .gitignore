@@ -1,3 +1,4 @@
 node_modules
 filteredJobs.json
 jobs.json
+jobsWithKeywords.json

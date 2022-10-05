@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer')
-const fs = require('fs/promises')
+
 
 const fetchDescriptions = async (filteredJobs) => {
   const browser = await puppeteer.launch()
@@ -18,11 +18,14 @@ const fetchDescriptions = async (filteredJobs) => {
     })
 
     currentJob.description = description
+    currentJob.id = counter
     counter++ 
     console.log(`Added description to ${currentJob.title}, ${totalJobs - counter} to go.`)
   }
-  await fs.writeFile('filteredJobs.json', JSON.stringify(filteredJobs, null, 2))
+
   await browser.close()
+
+  return filteredJobs
 }
 
 module.exports = {fetchDescriptions}
